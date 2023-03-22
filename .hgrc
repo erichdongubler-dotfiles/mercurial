@@ -4,6 +4,7 @@ ls = status
 rg = !rg --ignore-file .hgignore "$@"
 pl = log --graph --template=git
 pl-wip = log --graph --rev=wip --template=git
+wip = log --graph --rev=wip --template=wip
 
 [color]
 color.brightblue = 12
@@ -21,6 +22,14 @@ git.header_dashes = white dim
 git.title = white
 git.title-here = white bold
 git.user = green
+wip.bookmarks = yellow underline
+wip.branch = yellow
+wip.draft = green
+wip.here = red
+wip.obsolete = none
+wip.public = blue
+wip.tags = yellow
+wip.user = magenta
 
 [diff]
 git = true
@@ -41,8 +50,10 @@ pager = bat --wrap=never --plain
 experimental.inmemory = yes
 
 [revsetalias]
+wip = (parents(not public()) or not public() or . or (head() and branch(default))) and (not obsolete() or orphan()^) and not closed() and not (fxheads() - date(-90))
 
 [templates]
+wip = '{label("wip.branch", if(branches,"{branches} "))}{label(ifeq(graphnode,"x","wip.obsolete","wip.{phase}"),"{rev}:{node|short}")}{label("wip.user", " {author|user}")}{label("wip.tags", if(tags," {tags}"))}{label("wip.tags", if(fxheads," {fxheads}"))}{if(bookmarks," ")}{label("wip.bookmarks", if(bookmarks,bookmarks))}{label(ifcontains(rev, revset("parents()"), "wip.here"), " {desc|firstline}")}'
 git = '{label("git.header_dashes", "---")} {label(ifeq(graphnode,"x","git.commit.obsolete","git.commit.{phase}"),"{rev}:{node|short}")} {label("git.header_dashes", "-")}{if(bookmarks," ")}{label("git.bookmarks", if(bookmarks,bookmarks))}{label("wip.branch", if(branches," ({branches})"))}{label("wip.tags", if(tags," {tags}"))}{label("wip.tags", if(fxheads," {fxheads}"))}\n{label(ifcontains(rev, revset("parents()"), "git.title-here", "git.title"), "{desc|firstline}")} {label("git.author", "{author|user}")} {label("git.date", "({date|age})")}'
 
 [ui]
