@@ -2,8 +2,8 @@
 fd = !fd --ignore-file .hgignore "$@"
 ls = status
 rg = !rg --ignore-file .hgignore "$@"
-pl = log --graph --rev=wip --template=git
-pla = log --graph --template=git
+pl = log --graph --template=git
+pl-wip = log --graph --rev=wip --template=git
 
 [color]
 color.brightblue = 12
