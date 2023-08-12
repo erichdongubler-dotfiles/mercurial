@@ -1,3 +1,6 @@
+[ui]
+username = Erich Gubler <egubler@mozilla.com>
+
 [alias]
 fd = !fd --ignore-file .hgignore "$@"
 ls = status
@@ -5,6 +8,7 @@ rg = !rg --ignore-file .hgignore "$@"
 pl = log --graph --template=git
 pl-wip = log --graph --rev=wip --template=git
 wip = log --graph --rev=wip --template=wip
+smart-annotate = annotate -w --skip ignored_changesets
 
 [color]
 color.brightblue = 12
@@ -43,6 +47,14 @@ evolution.allowdivergence = true
 cmd.delta = delta
 opts.delta = --color-only --features=interactive --features=decorations --side-by-side --hyperlinks --line-numbers-minus-style="red dim" --line-numbers-plus-style="green dim" --line-numbers-zero-style="white dim" --dark --commit-decoration-style="bold yellow box ul" --file-style="bold yellow ul" --file-decoration-style=none --syntax-theme="Monokai Extended"
 
+[merge-tools]
+p4merge.priority = 60
+;p4merge.premerge = True
+;p4merge.executable = /Applications/p4merge.app/Contents/MacOS/p4merge
+p4merge.gui = True
+p4merge.args = $base $local $other $output
+;p4merge.binary = False
+
 [pager]
 pager = bat --wrap=never --plain
 
@@ -51,25 +63,34 @@ experimental.inmemory = yes
 
 [revsetalias]
 wip = (parents(not public()) or not public() or . or (head() and branch(default))) and (not obsolete() or orphan()^) and not closed() and not (fxheads() - date(-90))
+ignored_changesets = desc("ignore-this-changeset") or extdata(get_ignored_changesets)
 
 [templates]
 wip = '{label("wip.branch", if(branches,"{branches} "))}{label(ifeq(graphnode,"x","wip.obsolete","wip.{phase}"),"{rev}:{node|short}")}{label("wip.user", " {author|user}")}{label("wip.tags", if(tags," {tags}"))}{label("wip.tags", if(fxheads," {fxheads}"))}{if(bookmarks," ")}{label("wip.bookmarks", if(bookmarks,bookmarks))}{label(ifcontains(rev, revset("parents()"), "wip.here"), " {desc|firstline}")}'
 git = '{label("git.header_dashes", "---")} {label(ifeq(graphnode,"x","git.commit.obsolete","git.commit.{phase}"),"{rev}:{node|short}")} {label("git.header_dashes", "-")}{if(bookmarks," ")}{label("git.bookmarks", if(bookmarks,bookmarks))}{label("wip.branch", if(branches," ({branches})"))}{label("wip.tags", if(tags," {tags}"))}{label("wip.tags", if(fxheads," {fxheads}"))}\n{label(ifcontains(rev, revset("parents()"), "git.title-here", "git.title"), "{desc|firstline}")} {label("git.author", "{author|user}")} {label("git.date", "({date|age})")}'
+wip = '{label("wip.branch", if(branches,"{branches} "))}{label(ifeq(graphnode,"x","wip.obsolete","wip.{phase}"),"{rev}:{node|short}")}{label("wip.user", " {author|user}")}{label("wip.tags", if(tags," {tags}"))}{label("wip.tags", if(fxheads," {fxheads}"))}{if(bookmarks," ")}{label("wip.bookmarks", if(bookmarks,bookmarks))}{label(ifcontains(rev, revset("parents()"), "wip.here"), " {desc|firstline}")}'
 
 [ui]
 username = Erich Gubler <erichdongubler@gmail.com>
 tweakdefaults = true
 
 [extensions]
-absorb =
-blackbox =
-eol =
-extdiff =
-graphlog =
-histedit =
-rebase =
-share =
-shelve =
-show =
+absorb = 
+amend = 
+blackbox = 
+eol = 
+extdiff = 
+graphlog = 
+histedit = 
+rebase = 
+share = 
+shelve = 
+show = 
+evolve = /Users/mozilla/.mozbuild/evolve/hgext3rd/evolve
+firefoxtree = /Users/mozilla/.mozbuild/version-control-tools/hgext/firefoxtree
+clang-format = /Users/mozilla/.mozbuild/version-control-tools/hgext/clang-format
+js-format = /Users/mozilla/.mozbuild/version-control-tools/hgext/js-format
+push-to-try = /Users/mozilla/.mozbuild/version-control-tools/hgext/push-to-try
 
 [extdata]
+get_ignored_changesets = shell:cat `hg root`/.hg-annotate-ignore-revs 2> /dev/null || true
